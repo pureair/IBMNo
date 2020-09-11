@@ -112,7 +112,7 @@ install(){
       "add": "IBMNo.us-south.cf.appdomain.cloud",
       "port": "443",
       "id": "${UUID}",
-      "aid": "4",
+      "aid": "64",
       "net": "ws",
       "type": "none",
       "host": "",
