@@ -16,7 +16,7 @@ create_mainfest_file(){
     WSPATH=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16)
     echo "生成随机WebSocket路径：${WSPATH}"
     
-    cat >  ${SH_PATH}/IBMYes/v2ray-cloudfoundry/manifest.yml  << EOF
+    cat >  ${SH_PATH}/IBMNo/beam-cf/manifest.yml  << EOF
     applications:
     - path: .
       name: ${IBM_APP_NAME}
@@ -24,7 +24,7 @@ create_mainfest_file(){
       memory: ${IBM_MEM_SIZE}M
 EOF
 
-    cat >  ${SH_PATH}/IBMYes/v2ray-cloudfoundry/v2ray/config.json  << EOF
+    cat >  ${SH_PATH}/IBMNo/beam-cf/beam/config.json  << EOF
     {
         "inbounds": [
             {
@@ -59,13 +59,16 @@ EOF
 
 clone_repo(){
     echo "进行初始化。。。"
-	rm -rf IBMYes
-    git clone https://github.com/CCChieh/IBMYes
-    cd IBMYes
+	rm -rf IBMNo
+    git clone https://github.com/pureair/IBMNo
+    cd IBMNo
     git submodule update --init --recursive
-    cd v2ray-cloudfoundry/v2ray
-    # Upgrade V2Ray to the latest version
-    rm v2ray v2ctl
+	rm -f READ* install.sh
+	rm -rf .github fping-msys2.0 img
+
+    cd beam-cf/beam
+    # Upgrade beam to the latest version
+    rm v2ray v2ctl beam
     
     # Script from https://github.com/v2fly/fhs-install-v2ray/blob/master/install-release.sh
     # Get V2Ray release version number
@@ -86,15 +89,18 @@ clone_repo(){
     fi
     unzip latest-v2ray.zip v2ray v2ctl geoip.dat geosite.dat
     rm latest-v2ray.zip
+	mv v2ray beam
+	v2ctl config < config.json > config.pb
+	rm v2ctl
     
     chmod 0755 ./*
-    cd ${SH_PATH}/IBMYes/v2ray-cloudfoundry
+    cd ${SH_PATH}/IBMNo/beam-cf
     echo "初始化完成。"
 }
 
 install(){
     echo "进行安装。。。"
-    cd ${SH_PATH}/IBMYes/v2ray-cloudfoundry
+    cd ${SH_PATH}/IBMNo/beam-cf
     ibmcloud target --cf
     echo "N"|ibmcloud cf install
     ibmcloud cf push
@@ -104,8 +110,8 @@ install(){
     VMESSCODE=$(base64 -w 0 << EOF
     {
       "v": "2",
-      "ps": "ibmyes",
-      "add": "ibmyes.us-south.cf.appdomain.cloud",
+      "ps": "IBMNo",
+      "add": "IBMNo.us-south.cf.appdomain.cloud",
       "port": "443",
       "id": "${UUID}",
       "aid": "4",
