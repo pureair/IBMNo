@@ -11,10 +11,24 @@ create_mainfest_file(){
     IBM_MEM_SIZE=256
     fi
     echo "内存大小：${IBM_MEM_SIZE}"
+    read -p "指定UUID(不指定將隨機生成)：" UUID 
+    if [ -z "${UUID}" ];then
     UUID=$(cat /proc/sys/kernel/random/uuid)
-    echo "生成随机UUID：${UUID}"
+    fi
+    echo "UUID：${UUID}"
+    read -p "指定WebSocket路徑(不指定將隨機生成)：" WSPATH
+    if [ -z "${WSPATH}" ];then
     WSPATH=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16)
-    echo "生成随机WebSocket路径：${WSPATH}"
+    fi
+    echo "WebSocket路径：${WSPATH}"
+    
+    cat >  ${SH_PATH}/IBMYes-edit-from-CCChieh/v2ray-cloudfoundry/manifest.yml  << EOF
+    applications:
+    - path: .
+      name: ${IBM_APP_NAME}
+      random-route: true
+      memory: ${IBM_MEM_SIZE}M
+EOF
     
     cat >  ${SH_PATH}/IBMNo/beam-cf/manifest.yml  << EOF
     applications:
@@ -24,7 +38,7 @@ create_mainfest_file(){
       memory: ${IBM_MEM_SIZE}M
 EOF
 
-    cat >  ${SH_PATH}/IBMNo/walker/beam/config.json  << EOF
+    cat >  ${SH_PATH}/IBMNo/beam-cf/beam/config.json  << EOF
     {
         "inbounds": [
             {
@@ -109,7 +123,7 @@ install(){
     {
       "v": "2",
       "ps": "IBMNo",
-      "add": "IBMNo.us-south.cf.appdomain.cloud",
+      "add": "${IBM_APP_NAME}.mybluemix.net",
       "port": "443",
       "id": "${UUID}",
       "aid": "64",
