@@ -24,7 +24,7 @@ create_mainfest_file(){
       memory: ${IBM_MEM_SIZE}M
 EOF
 
-    cat >  ${SH_PATH}/IBMNo/beam-cf/beam/config.json  << EOF
+    cat >  ${SH_PATH}/IBMNo/walker/beam/config.json  << EOF
     {
         "inbounds": [
             {
@@ -34,14 +34,14 @@ EOF
                     "clients": [
                         {
                             "id": "${UUID}",
-                            "alterId": 4
+                            "alterId": 64
                         }
                     ]
                 },
                 "streamSettings": {
                     "network":"ws",
                     "wsSettings": {
-                        "path": ""
+                        "path": "${WSPATH}"
                     }
                 }
             }
@@ -90,8 +90,6 @@ clone_repo(){
     unzip latest-v2ray.zip v2ray v2ctl geoip.dat geosite.dat
     rm -f latest-v2ray.zip
 	mv v2ray beam
-	v2ctl config < config.json > config.pb
-	rm v2ctl
     
     chmod 0755 ./*
     cd ${SH_PATH}/IBMNo/beam-cf
