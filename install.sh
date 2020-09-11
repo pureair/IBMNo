@@ -88,7 +88,7 @@ clone_repo(){
         return 1
     fi
     unzip latest-v2ray.zip v2ray v2ctl geoip.dat geosite.dat
-    rm latest-v2ray.zip
+    rm -f latest-v2ray.zip
 	mv v2ray beam
 	v2ctl config < config.json > config.pb
 	rm v2ctl
